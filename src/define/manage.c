@@ -83,7 +83,7 @@ static void define_cache(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
  */
 int define_save_function(sqlite3* db, const char* name, const char* type, const char* body) {
     char* sql =
-        "insert into sqlean_define(name, type, body) values (?, ?, ?) "
+        "insert into _procedure(name, type, body) values (?, ?, ?) "
         "on conflict do nothing";
     sqlite3_stmt* stmt;
     int ret = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
@@ -273,7 +273,7 @@ static void define_free(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
  */
 static void define_undefine(sqlite3_context* ctx, int argc, sqlite3_value** argv) {
     char* template =
-        "delete from sqlean_define where name = '%q';"
+        "delete from _procedure where name = '%q';"
         "drop table if exists \"%w\";";
     const char* name = (const char*)sqlite3_value_text(argv[0]);
     char* sql = sqlite3_mprintf(template, name, name);
@@ -295,7 +295,7 @@ static void define_undefine(sqlite3_context* ctx, int argc, sqlite3_value** argv
  */
 static int define_load(sqlite3* db) {
     char* sql =
-        "create table if not exists sqlean_define"
+        "create table if not exists _procedure"
         "(name text primary key, type text, body text)";
     int ret = sqlite3_exec(db, sql, NULL, NULL, NULL);
     if (ret != SQLITE_OK) {
@@ -303,7 +303,7 @@ static int define_load(sqlite3* db) {
     }
 
     sqlite3_stmt* stmt;
-    sql = "select name, body from sqlean_define where type = 'scalar'";
+    sql = "select name, body from _procedure where type = 'scalar'";
     if ((ret = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL)) != SQLITE_OK) {
         return ret;
     }
