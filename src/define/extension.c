@@ -10,7 +10,9 @@ SQLITE_EXTENSION_INIT3
 
 int define_init(sqlite3* db) {
     int status = define_manage_init(db);
+#ifndef DISABLE_DEFINE_EVAL
     define_eval_init(db);
+#endif
     define_module_init(db);
     return status;
 }
